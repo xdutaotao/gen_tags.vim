@@ -46,10 +46,12 @@ endfunction
 function! s:gtags_db_gen(file)
   echo "Generate GTAGS"
 
+  call system('find `pwd` -name "\.*" -prune -o -iname "*.[ch]" -print -o -iname "*.cpp" -print > Gfiles')
+  
   if filereadable(a:file)
-    let l:cmd='global -u'
+    let l:cmd='global -u -f Gfiles'
   else
-    let l:cmd='gtags'
+    let l:cmd='gtags -f Gfiles'
   endif
 
   if s:has_vimproc()
@@ -82,7 +84,7 @@ nmap <silent> <leader>gg :GenGTAGS<cr>
 
 function! UpdateGtags(f)
   let dir = fnamemodify(a:f, ':p:h')
-  exe 'silent !cd ' . dir . ' && global -u &> /dev/null &'
+  exe 'silent !cd ' . dir . ' && global -u -f Gfiles &> /dev/null &'
 endfunction
 au BufWritePost *.[ch] call UpdateGtags(expand('<afile>'))
 
